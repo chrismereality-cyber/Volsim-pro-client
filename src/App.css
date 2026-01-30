@@ -1,0 +1,12 @@
+body { background: #050505; color: #00ff41; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
+.terminal { display: flex; flex-direction: column; height: 100vh; padding: 20px; justify-content: space-between; box-sizing: border-box; }
+.header { font-size: 0.8rem; letter-spacing: 2px; border-bottom: 1px solid #00ff41; padding-bottom: 5px; }
+.blink { animation: blinker 1s linear infinite; color: red; margin-right: 5px; }
+@keyframes blinker { 50% { opacity: 0; } }
+.price-display { text-align: center; }
+.price-normal { font-size: 3rem; text-shadow: 0 0 10px #00ff41; }
+.price-alert { font-size: 3rem; color: #ff003c; text-shadow: 0 0 20px #ff003c; animation: shake 0.5s infinite; }
+.sniper-btn { background: transparent; border: 2px solid #00ff41; color: #00ff41; padding: 20px; font-size: 1.2rem; font-weight: bold; width: 100%; border-radius: 5px; box-shadow: 0 0 10px #00ff41; margin-top: 10px; }
+.sniper-btn:active { background: #00ff41; color: #000; }
+.alert-input input { background: #000; border: 1px solid #00ff41; color: #00ff41; padding: 10px; width: 100%; box-sizing: border-box; }
+@keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, 1px); } }
