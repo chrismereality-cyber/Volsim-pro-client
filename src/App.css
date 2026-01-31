@@ -9,4 +9,7 @@ body { background: #050505; color: #00ff41; font-family: 'Courier New', monospac
 .sniper-btn { background: transparent; border: 2px solid #00ff41; color: #00ff41; padding: 20px; font-size: 1.2rem; font-weight: bold; width: 100%; border-radius: 5px; box-shadow: 0 0 10px #00ff41; margin-top: 10px; }
 .sniper-btn:active { background: #00ff41; color: #000; }
 .alert-input input { background: #000; border: 1px solid #00ff41; color: #00ff41; padding: 10px; width: 100%; box-sizing: border-box; }
-@keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, 1px); } }
+@keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, 1px); } }.chart-area { display: flex; align-items: flex-end; height: 100px; gap: 2px; border-bottom: 1px solid #00ff41; margin: 20px 0; }
+.bar { flex: 1; background: #00ff41; box-shadow: 0 0 5px #00ff41; min-height: 2px; transition: height 0.5s ease; }
+.trade-log { font-size: 0.7rem; color: #aaa; height: 80px; overflow: hidden; border-left: 2px solid #333; padding-left: 10px; }
+.log-entry { margin-bottom: 4px; color: #00ff41; }
