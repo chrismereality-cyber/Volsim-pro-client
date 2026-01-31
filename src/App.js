@@ -6,18 +6,24 @@ function App() {
   const [history, setHistory] = useState([]);
   const [chart, setChart] = useState([]);
 
-  useEffect(() => {
-    const fetchData = () => {
-      fetch('https://volsim-pro.onrender.com/status')
-        .then(res => res.json())
-        .then(json => {
-          setData(json);
-          setChart(prev => [...prev.slice(-15), json.btc_price]); // Keep last 15 points
-        });
-      fetch('https://volsim-pro.onrender.com/history')
-        .then(res => res.json())
-        .then(setHistory);
+    useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://volsim-pro.onrender.com/status');
+        const data = await response.json();
+        
+        // Safety Guard: Map btc_price to price and prevent NaN
+        if (data.btc_price) {
+          setPrice(Number(data.btc_price));
+          setRatio(Number(data.ratio));
+        } else if (data.price) {
+          setPrice(Number(data.price));
+        }
+      } catch (err) {
+        console.error("Data Stream Error:", err);
+      }
     };
+
     const interval = setInterval(fetchData, 2000);
     return () => clearInterval(interval);
   }, []);
@@ -52,3 +58,4 @@ function App() {
   );
 }
 export default App;
+
