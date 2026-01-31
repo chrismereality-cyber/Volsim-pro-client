@@ -29,7 +29,7 @@ function App() {
 
   return (
     <div className="terminal">
-      <div className="header">VOLSIM_PRO_v2.0 // RATIO: {data.ratio} XAU/BTC</div>
+      <div className="header">VOLSIM_PRO_v2.0 // RATIO: {Number(data.ratio)} XAU/BTC</div>
       
       <div className="chart-area">
         {chart.map((p, i) => (
