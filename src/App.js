@@ -1,55 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
 
 function App() {
-  const [data, setData] = useState(0);
-  const [history, setHistory] = useState(0);
-  const [chart, setChart] = useState(0);
+  const [price, setPrice] = useState(0);
+  const [ratio, setRatio] = useState(0);
 
-      useEffect(() => {
-    const update = () => {
-      fetch("https://volsim-pro.onrender.com/status")
-        .then(res => res.json())
-        .then(data => {
-          const val = data.btc_price || data.price || 0;
-          setPrice(Number(val));
-        })
-        .catch(e => console.log("Waiting for stream..."));
+  useEffect(() => {
+    const syncEngine = async () => {
+      try {
+        const res = await fetch('https://volsim-pro.onrender.com/status');
+        const data = await res.json();
+        
+        const freshPrice = Number(data.btc_price || data.price || 0);
+        const freshRatio = Number(data.ratio || 0);
+
+        if (!isNaN(freshPrice) && freshPrice !== 0) {
+          setPrice(freshPrice);
+          setRatio(freshRatio);
+        }
+      } catch (e) {
+        console.warn("Ghost detected...");
+      }
     };
-    const timer = setInterval(update, 2000);
-    update();
-    return () => clearInterval(timer);
+
+    const heartBeat = setInterval(syncEngine, 2000);
+    syncEngine(); // Run immediately on load
+    return () => clearInterval(heartBeat);
   }, []);
 
-  const handleSniper = () => {
-    fetch('https://volsim-pro.onrender.com/sniper')
-      .then(() => window.navigator.vibrate && window.navigator.vibrate(100));
-  };
-
   return (
-    <div className="terminal">
-      <div className="header">VOLSIM_PRO_v2.0 // RATIO: {Number(data.ratio)} XAU/BTC</div>
-      
-      <div className="chart-area">
-        {chart.map((p, i) => (
-          <div key={i} className="bar" style={{height: `${(p/90000)*100}%`}}></div>
-        ))}
+    <div style={{background: '#000', color: '#0f0', padding: '30px', fontFamily: 'monospace', minHeight: '100vh'}}>
+      <div style={{border: '1px solid #0f0', padding: '20px'}}>
+        <h2 style={{textShadow: '0 0 10px #0f0'}}>LINK: CONNECTED</h2>
+        <div style={{opacity: 0.7}}>MARKET_DATA_STREAM_V3</div>
+        <h1 style={{fontSize: '3.5rem', margin: '20px 0'}}>${price.toLocaleString(undefined, {minimumFractionDigits: 2})}</h1>
+        <div style={{fontSize: '1.2rem'}}>XAU/BTC_RATIO: {ratio.toFixed(4)}</div>
+        <div style={{marginTop: '40px', color: '#555', fontSize: '0.8rem'}}>NO_GHOST_PROTOCOL_ACTIVE</div>
       </div>
-
-      <div className="price-display">
-        <h1>${data.btc_price.toLocaleString(undefined, {minimumFractionDigits: 2})}</h1>
-      </div>
-
-      <div className="trade-log">
-        {history.map(t => (
-          <div key={t.id} className="log-entry">>> EXEC @ {t.btc_price} [{t.time}]</div>
-        ))}
-      </div>
-
-      <button className="sniper-btn" onClick={handleSniper}>ENGAGE SNIPER</button>
     </div>
   );
 }
+
 export default App;
-
-
