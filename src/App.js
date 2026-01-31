@@ -7,7 +7,7 @@ function App() {
   useEffect(() => {
     const syncEngine = async () => {
       try {
-        const res = await fetch('https://volsim-pro.onrender.com/status');
+        const res = await fetch("https://volsim-pro.onrender.com/status");
         const data = await res.json();
         
         const freshPrice = Number(data.btc_price || data.price || 0);
