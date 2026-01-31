@@ -43,7 +43,7 @@ function App() {
 
       <div className="trade-log">
         {history.map(t => (
-          <div key={t.id} className="log-entry">>> EXEC @ {t.price} [{t.time}]</div>
+          <div key={t.id} className="log-entry">>> EXEC @ {t.btc_price} [{t.time}]</div>
         ))}
       </div>
 
