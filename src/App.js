@@ -2,30 +2,23 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
-  const [data, setData] = useState({ btc_price: 0, gold_price: 0, ratio: 0 });
-  const [history, setHistory] = useState([]);
-  const [chart, setChart] = useState([]);
+  const [data, setData] = useState(0);
+  const [history, setHistory] = useState(0);
+  const [chart, setChart] = useState(0);
 
-    useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('https://volsim-pro.onrender.com/status');
-        const data = await response.json();
-        
-        // Safety Guard: Map btc_price to price and prevent NaN
-        if (data.btc_price) {
-          setPrice(Number(data.btc_price));
-          setRatio(Number(data.ratio));
-        } else if (data.price) {
-          setPrice(Number(data.price));
-        }
-      } catch (err) {
-        console.error("Data Stream Error:", err);
-      }
+      useEffect(() => {
+    const update = () => {
+      fetch("https://volsim-pro.onrender.com/status")
+        .then(res => res.json())
+        .then(data => {
+          const val = data.btc_price || data.price || 0;
+          setPrice(Number(val));
+        })
+        .catch(e => console.log("Waiting for stream..."));
     };
-
-    const interval = setInterval(fetchData, 2000);
-    return () => clearInterval(interval);
+    const timer = setInterval(update, 2000);
+    update();
+    return () => clearInterval(timer);
   }, []);
 
   const handleSniper = () => {
@@ -58,4 +51,5 @@ function App() {
   );
 }
 export default App;
+
 
