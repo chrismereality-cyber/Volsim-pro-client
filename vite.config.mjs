@@ -1,14 +1,13 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import path from "path";
+import { resolve } from "path";
 
 export default defineConfig({
   plugins: [react()],
-  root: "./", // Explicitly set root to the current directory (client)
   build: {
-    outDir: "dist",
     rollupOptions: {
-      input: path.resolve(__dirname, "index.html"),
+      // This tells Rollup exactly where to find the entry point
+      input: resolve(__dirname, "index.html"),
     },
   },
 });
