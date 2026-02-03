@@ -4,25 +4,26 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 app.use(cors());
 
-let price = 65000;
-let headline = "SYSTEM_STABLE";
+let markets = {
+    BTC: { price: 65000, color: "#0f0" },
+    ETH: { price: 3500, color: "#88f" },
+    SOL: { price: 145, color: "#f0f" }
+};
+let headline = "PORTFOLIO_SCAN_ACTIVE";
 
 setInterval(() => {
-    let change = (Math.random() - 0.5) * 0.006; // Standard Vol
-    
-    // BLACK SWAN EVENT (1% chance every 3 seconds)
-    if (Math.random() > 0.99) {
-        const crash = 0.70 + (Math.random() * 0.15); // 15% to 30% drop
-        price *= crash;
-        headline = "??_BLACK_SWAN_EVENT_DETECTED_??";
-    } else if (Math.random() > 0.90) {
-        headline = "VOLATILITY_RISING";
-    } else {
-        headline = "SCANNING_MARKET...";
-    }
+    // Apply volatility to all assets
+    Object.keys(markets).forEach(key => {
+        let vol = key === "SOL" ? 0.008 : 0.004; // SOL is more volatile
+        markets[key].price *= (1 + (Math.random() - 0.5) * vol);
+    });
 
-    price *= (1 + change);
+    if (Math.random() > 0.98) {
+        headline = "??_SECTOR_WIDE_VOLATILITY_??";
+    } else {
+        headline = "MARKETS_DECOUPLED";
+    }
 }, 3000);
 
-app.get("/api/data", (req, res) => res.json({ price, headline }));
-app.listen(PORT, "0.0.0.0", () => console.log("Black_Swan_V10_Live"));
+app.get("/api/data", (req, res) => res.json({ markets, headline }));
+app.listen(PORT, "0.0.0.0", () => console.log("Multi_Asset_V11_Live"));
