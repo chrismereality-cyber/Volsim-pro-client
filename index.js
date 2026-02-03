@@ -2,39 +2,42 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 10000;
-
-// This allows ANY website to talk to your backend - perfect for testing
 app.use(cors());
 
-let markets = {
-    BTC: { price: 65000, headline: "BTC_MARKET_STABLE" },
-    ETH: { price: 3500, headline: "ETH_CONSOLIDATING" }
-};
+let price = 65000;
+let headline = "MARKET_STABLE";
+let eventExpiry = 0;
 
-const newsPool = [
-    { text: "INSTITUTIONAL_BUYING: BTC Supply Shrinking", coin: "BTC", impact: 1.05 },
-    { text: "VITALIK_UPDATE: Ethereum Gas Fees Dropping", coin: "ETH", impact: 1.08 },
-    { text: "ETHEREUM_ETF: Massive Inflows Detected", coin: "ETH", impact: 1.12 },
-    { text: "EXCHANGE_FUD: Regulatory Pressure on Altcoins", coin: "ETH", impact: 0.90 }
+const newsEvents = [
+    { msg: "WHALE_ACCUMULATION_DETECTED", impact: 1.005 },
+    { msg: "INSTITUTIONAL_FOMO_RISING", impact: 1.008 },
+    { msg: "EXCHANGE_HACK_RUMORS", impact: 0.992 },
+    { msg: "REGULATORY_CRACKDOWN_INITIATED", impact: 0.995 },
+    { msg: "ELON_TWEET_DETECTED", impact: 1.012 }
 ];
 
 setInterval(() => {
-    markets.BTC.price *= (1 + (Math.random() - 0.5) * 0.002);
-    markets.ETH.price *= (1 + (Math.random() - 0.5) * 0.003);
-
-    if (Math.random() > 0.8) {
-        const event = newsPool[Math.floor(Math.random() * newsPool.length)];
-        markets[event.coin].price *= event.impact;
-        markets[event.coin].headline = event.text;
+    // Normal volatility
+    let change = (Math.random() - 0.5) * 0.002;
+    
+    // Apply news impact if active
+    if (Date.now() < eventExpiry) {
+        change += (Math.random() * 0.005); // Add extra pump/dump
+    } else if (Math.random() > 0.98) {
+        // Trigger new event
+        const event = newsEvents[Math.floor(Math.random() * newsEvents.length)];
+        headline = event.msg;
+        price *= event.impact;
+        eventExpiry = Date.now() + 10000; // Event lasts 10 seconds
+    } else {
+        headline = "TRADING_LATERAL";
     }
+
+    price *= (1 + change);
 }, 3000);
 
-// Basic test route to check in browser
-app.get("/", (req, res) => res.send("VOLSIM_BACKEND_IS_ALIVE"));
-
 app.get("/api/data", (req, res) => {
-    console.log("Data requested at", new Date().toISOString());
-    res.json(markets);
+    res.json({ price, headline, status: "LIVE" });
 });
 
-app.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, "0.0.0.0", () => console.log("Engine V6 Live"));
