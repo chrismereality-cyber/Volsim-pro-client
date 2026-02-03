@@ -5,30 +5,31 @@ const PORT = process.env.PORT || 10000;
 app.use(cors());
 
 let price = 65000;
-let headline = "SYSTEM_IDLE"; // Default starting headline
+let headline = "SYSTEM_READY";
 
 const newsEvents = [
-    { msg: "WHALE_ACCUMULATION_DETECTED", impact: 1.005 },
-    { msg: "INSTITUTIONAL_FOMO_RISING", impact: 1.008 },
-    { msg: "EXCHANGE_HACK_RUMORS", impact: 0.992 },
-    { msg: "REGULATORY_CRACKDOWN_INITIATED", impact: 0.995 }
+    { msg: "WHALE_BUY_ORDER_DETECTED", impact: 1.02 },
+    { msg: "EXCHANGE_FUD_SPREADING", impact: 0.97 },
+    { msg: "INSTITUTIONAL_ADOPTION_NEWS", impact: 1.03 },
+    { msg: "NETWORK_SECURITY_BREACH", impact: 0.95 },
+    { msg: "ETHEREUM_UPGRADE_SUCCESS", impact: 1.01 },
+    { msg: "Satoshi_Wallet_Wakes_Up", impact: 0.92 }
 ];
 
 setInterval(() => {
-    price *= (1 + (Math.random() - 0.5) * 0.002);
+    // Increase base volatility
+    price *= (1 + (Math.random() - 0.5) * 0.005);
     
-    // 10% chance to change the headline every 3 seconds
-    if (Math.random() > 0.90) {
+    // 25% chance to trigger a news event every 3 seconds
+    if (Math.random() > 0.75) {
         const event = newsEvents[Math.floor(Math.random() * newsEvents.length)];
         headline = event.msg;
         price *= event.impact;
-    } else if (Math.random() > 0.95) {
-        headline = "SCANNING_CHANNELS...";
+    } else {
+        // 50% chance to revert to "Scanning" if no event
+        if(Math.random() > 0.5) headline = "MARKET_ANALYSIS_IN_PROGRESS...";
     }
 }, 3000);
 
-app.get("/api/data", (req, res) => {
-    res.json({ price, headline, status: "LIVE" });
-});
-
-app.listen(PORT, "0.0.0.0", () => console.log("Engine_V7_Live"));
+app.get("/api/data", (req, res) => res.json({ price, headline }));
+app.listen(PORT, "0.0.0.0", () => console.log("Chaos_Engine_V8_Live"));
