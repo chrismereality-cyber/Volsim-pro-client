@@ -2,41 +2,33 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 10000;
-
 app.use(cors());
 
-let currentPrice = 65000;
-let lastHeadline = "MARKET_IDLE: No major volatility detected.";
+let markets = {
+    BTC: { price: 65000, headline: "BTC_MARKET_STABLE" },
+    ETH: { price: 3500, headline: "ETH_CONSOLIDATING" }
+};
 
-const headlines = [
-    { text: "FEDERAL_RESERVE: Interest rates held steady.", impact: 0.001 },
-    { text: "WHALE_ALERT: 5,000 BTC moved to cold storage.", impact: 0.005 },
-    { text: "ELON_MUSK: 'Bitcoin is the future of Earth'.", impact: 0.02 },
-    { text: "CYBER_SECURITY: Major exchange reports breach.", impact: -0.04 },
-    { text: "RETAIL_ADOPTION: Coffee chain starts accepting BTC.", impact: 0.008 }
+const newsPool = [
+    { text: "INSTITUTIONAL_BUYING: BTC Supply Shrinking", coin: "BTC", impact: 1.05 },
+    { text: "VITALIK_UPDATE: Ethereum Gas Fees Dropping", coin: "ETH", impact: 1.08 },
+    { text: "ETHEREUM_ETF: Massive Inflows Detected", coin: "ETH", impact: 1.12 },
+    { text: "MINING_DIFFICULTY: BTC Hashrate Hits New ATH", coin: "BTC", impact: 1.03 },
+    { text: "EXCHANGE_FUD: Regulatory Pressure on Altcoins", coin: "ETH", impact: 0.90 }
 ];
 
-// Update logic: Every 10 seconds, maybe change the news
 setInterval(() => {
-    if (Math.random() > 0.7) {
-        const event = headlines[Math.floor(Math.random() * headlines.length)];
-        lastHeadline = event.text;
-        currentPrice = currentPrice * (1 + event.impact);
+    // Random Jitter for both
+    markets.BTC.price *= (1 + (Math.random() - 0.5) * 0.002);
+    markets.ETH.price *= (1 + (Math.random() - 0.5) * 0.003);
+
+    // Occasional News Event
+    if (Math.random() > 0.8) {
+        const event = newsPool[Math.floor(Math.random() * newsPool.length)];
+        markets[event.coin].price *= event.impact;
+        markets[event.coin].headline = event.text;
     }
-    // Natural jitter
-    currentPrice += (Math.random() - 0.5) * 50;
 }, 3000);
 
-app.get("/", (req, res) => res.send("ENGINE_V5_LIVE"));
-
-app.get("/api/data", (req, res) => {
-    res.json({ 
-        price: currentPrice, 
-        headline: lastHeadline,
-        timestamp: Date.now() 
-    });
-});
-
-app.listen(PORT, "0.0.0.0", () => {
-    console.log(`VOLSIM_ENGINE_V5_ACTIVE_ON_${PORT}`);
-});
+app.get("/api/data", (req, res) => res.json(markets));
+app.listen(PORT, "0.0.0.0", () => console.log("V6_MULTI_ASSET_LIVE"));
