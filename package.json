@@ -9,8 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "pg": "^8.18.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-sparklines": "^1.7.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",

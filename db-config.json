@@ -1,0 +1,5 @@
+{
+  "connectionString": "postgresql://architect:PeBMRRpdS3AORpR8KTGp6dYXXxhjN3sO@dpg-d623v27pm1nc73flpcb0-a.virginia-postgres.render.com/volsim_pro_ledger?ssl=true",
+  "alias": "Architect",
+  "password": "genesis_protocol"
+}
