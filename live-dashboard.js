@@ -1,52 +1,35 @@
 const API_URL = "https://volsim-pro.onrender.com";
 
-async function login() {
-    // 1. Check if we already have a token
-    if (localStorage.getItem("volsim_token")) {
-        startDashboard();
-        return;
-    }
-
-    // 2. If no token, ask for credentials
-    const user = prompt("Username (Hint: chris):");
-    const pass = prompt("Password:");
-
-    if (!user || !pass) {
-        alert("Credentials required to access Volsim Core.");
-        window.location.reload();
-        return;
-    }
+async function updateDashboard() {
+    const token = localStorage.getItem("volsim_token");
+    if (!token) return;
 
     try {
-        const res = await fetch(`${API_URL}/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: user, password: pass })
+        const res = await fetch(`${API_URL}/pulse`, {
+            headers: { "Authorization": `Bearer ${token}` }
         });
+        
+        if (res.status === 401) {
+            localStorage.removeItem("volsim_token");
+            location.reload();
+            return;
+        }
 
         const data = await res.json();
-
-        if (res.ok && data.success) {
-            localStorage.setItem("volsim_token", data.token);
-            alert("Access Granted.");
-            startDashboard();
-        } else {
-            alert("Access Denied: " + (data.message || "Invalid Login"));
-            // DON'T reload automatically, let the user click a button or refresh manually
-        }
+        document.getElementById('backend-status').innerText = "V12_SECURE_LINK";
+        document.getElementById('balance').innerText = data.balance;
+        document.getElementById('btc-holdings').innerText = data.btc;
+        document.getElementById('btc-price').innerText = data.price.toLocaleString();
+        
+        const balNum = parseFloat(data.balance.replace(/,/g, ''));
+        const netWorth = balNum + (parseFloat(data.btc) * data.price);
+        document.getElementById('net-worth').innerText = netWorth.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('timestamp').innerText = new Date().toLocaleTimeString();
     } catch (err) {
-        alert("Connection Error. Is the Render server awake?");
+        document.getElementById('backend-status').innerText = "OFFLINE";
     }
 }
 
-function startDashboard() {
-    // This is where your updateDashboard() and setInterval go
-    console.log("System Online...");
-    updateDashboard();
-    setInterval(updateDashboard, 3000);
-}
-
-login();
 async function executeTrade() {
     const amount = document.getElementById('trade-amount').value;
     const token = localStorage.getItem("volsim_token");
@@ -62,9 +45,33 @@ async function executeTrade() {
 
     const result = await res.json();
     if (result.success) {
-        alert(`TRADE SUCCESSFUL: Bought ${amount} BTC`);
+        alert("TRADE SUCCESSFUL");
         updateDashboard();
     } else {
         alert("TRADE FAILED: " + result.message);
     }
+}
+
+async function login() {
+    const user = prompt("User:");
+    const pass = prompt("Pass:");
+    const res = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: user, password: pass })
+    });
+    if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem("volsim_token", data.token);
+        location.reload();
+    } else {
+        alert("Login Failed");
+    }
+}
+
+if (!localStorage.getItem("volsim_token")) {
+    login();
+} else {
+    setInterval(updateDashboard, 3000);
+    updateDashboard();
 }
