@@ -51,7 +51,7 @@ async function trade(type) {
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({ type, asset, amount })
     });
-    if (res.ok) update(); else alert("Trade Rejected");
+    if (res.ok) update(); else const err = await res.json(); alert(`TRADE_REJECTED: ${err.message || "UNKNOWN_ERROR"}`);
 }
 
 if (!localStorage.getItem("volsim_token")) {
