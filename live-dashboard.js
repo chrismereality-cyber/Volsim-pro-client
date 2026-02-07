@@ -49,3 +49,4 @@ if (!localStorage.getItem("volsim_token")) {
     fetch(`${API_URL}/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: u, password: p }) })
     .then(r => r.json()).then(d => { if(d.success) { localStorage.setItem("volsim_token", d.token); location.reload(); }});
 } else { setInterval(update, 3000); update(); }
+// V14.1 Sync Cache Buster
