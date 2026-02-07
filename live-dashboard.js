@@ -15,13 +15,28 @@ async function updateDashboard() {
         const netWorth = balNum + (data.btc * data.price);
         document.getElementById('net-worth').innerText = netWorth.toLocaleString(undefined, {minimumFractionDigits: 2});
         
+        // Fix for Last Update
         document.getElementById('timestamp').innerText = new Date().toLocaleTimeString();
     } catch (err) {
-        console.error("Dashboard Error:", err);
         document.getElementById('backend-status').innerText = "OFFLINE";
-        document.getElementById('backend-status').style.color = "#ff0000";
     }
 }
 
-setInterval(updateDashboard, 3000);
-updateDashboard();
+// Secure Login Prompt
+if (!sessionStorage.getItem('volsim_auth')) {
+    const accessKey = prompt("Volsim Pro Secure Access\nEnter Key:");
+    if (accessKey === "admin") { // You can change 'admin' to your preferred password
+        sessionStorage.setItem('volsim_auth', 'true');
+        startApp();
+    } else {
+        alert("Access Denied");
+        window.location.reload();
+    }
+} else {
+    startApp();
+}
+
+function startApp() {
+    setInterval(updateDashboard, 3000);
+    updateDashboard();
+}
