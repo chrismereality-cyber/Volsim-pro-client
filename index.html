@@ -1,25 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volsim Pro Dashboard</title>
+    <meta charset="UTF-8"><title>Volsim Pro Terminal</title>
     <style>
-        body { background: #0f0f0f; color: #00ff00; font-family: monospace; padding: 20px; }
-        .card { border: 1px solid #00ff00; padding: 15px; margin-bottom: 10px; border-radius: 5px; background: #1a1a1a; }
-        h1 { border-bottom: 2px solid #00ff00; padding-bottom: 10px; }
-        span { font-weight: bold; color: #fff; }
-        #backend-status { color: #ff0000; }
+        body { background: #0a0a0a; color: #00ff00; font-family: 'Courier New', monospace; padding: 20px; }
+        .card { border: 1px solid #00ff00; padding: 15px; margin-bottom: 10px; background: #111; }
+        button { background: #00ff00; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        button:hover { background: #00cc00; }
+        input { background: #000; border: 1px solid #00ff00; color: #00ff00; padding: 10px; width: 80px; }
     </style>
 </head>
 <body>
-    <h1>VOLSIM_CORE_DASHBOARD_V7</h1>
-    <div class="card">Backend Status: <span id="backend-status">CONNECTING...</span></div>
-    <div class="card">Balance: $<span id="balance">0.00</span></div>
+    <h1>VOLSIM_CORE_V12</h1>
+    <div class="card">Status: <span id="backend-status">...</span> | Time: <span id="timestamp"></span></div>
+    <div class="card">Available Balance: $<span id="balance">0.00</span></div>
     <div class="card">BTC Holdings: <span id="btc-holdings">0</span></div>
-    <div class="card">Net Worth: $<span id="net-worth">0.00</span></div>
-    <div class="card">BTC Price: $<span id="btc-price">0.00</span></div>
-    <div class="card">Last Update: <span id="timestamp">N/A</span></div>
+    <div class="card">BTC Price: $<span id="btc-price">0</span></div>
+    
+    <div class="card">
+        <h3>TRADE EXECUTION</h3>
+        <input type="number" id="trade-amount" value="0.1" step="0.1"> BTC
+        <br>
+        <button onclick="executeTrade()">EXECUTE BUY ORDER</button>
+    </div>
 
     <script src="live-dashboard.js"></script>
 </body>

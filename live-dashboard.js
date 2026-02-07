@@ -47,3 +47,24 @@ function startDashboard() {
 }
 
 login();
+async function executeTrade() {
+    const amount = document.getElementById('trade-amount').value;
+    const token = localStorage.getItem("volsim_token");
+
+    const res = await fetch(`${API_URL}/trade`, {
+        method: "POST",
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ amountBTC: amount })
+    });
+
+    const result = await res.json();
+    if (result.success) {
+        alert(`TRADE SUCCESSFUL: Bought ${amount} BTC`);
+        updateDashboard();
+    } else {
+        alert("TRADE FAILED: " + result.message);
+    }
+}
