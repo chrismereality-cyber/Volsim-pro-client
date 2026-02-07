@@ -2,35 +2,38 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
-// Allow ABSOLUTELY EVERYTHING for debugging
-app.use(cors({ origin: "*" }));
+app.use(cors());
 app.use(express.json());
 
+// State
 let wealth = 1240270.80;
 let btc = 0;
 let price = 98000.00;
-let history = [98000, 98010, 97990];
+let history = [98000, 98050, 97980, 98100];
 
+// Logic
 setInterval(() => {
     price += (Math.random() - 0.5) * 50;
     history.push(price);
     if (history.length > 50) history.shift();
 }, 2000);
 
-// Root route to verify server is alive
-app.get("/", (req, res) => res.send("SERVER_IS_ALIVE"));
-
+// THIS IS THE ROUTE THAT IS MISSING
 app.get("/pulse", (req, res) => {
     res.json({
         balance: wealth.toLocaleString(undefined, {minimumFractionDigits: 2}),
-        btc, price, history
+        btc: btc,
+        price: price,
+        history: history
     });
 });
 
-app.post("/command", (req, res) => {
-    wealth += 1000000;
-    res.json({ ok: true });
+// Fallback route
+app.get("/", (req, res) => {
+    res.send("SERVER_IS_ACTIVE_PULSE_AT_/PULSE");
 });
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, "0.0.0.0", () => console.log("LOCKED_AND_LOADED"));
+app.listen(PORT, "0.0.0.0", () => {
+    console.log("HEALTH_CHECK_PASSED");
+});
