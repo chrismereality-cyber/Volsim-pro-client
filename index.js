@@ -1,25 +1,29 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const PORT = process.env.PORT || 10000;
+
 app.use(cors());
+app.use(express.json());
 
-let markets = {
-    BTC: { price: 65000, color: "#0f0" },
-    ETH: { price: 3500, color: "#88f" },
-    SOL: { price: 145, color: "#f0f" }
-};
+let wealth = 1240270.80;
+let btc = 0;
+let price = 98000.00;
+let history = [98000, 98100, 97900, 98200];
 
-setInterval(() => {
-    Object.keys(markets).forEach(key => {
-        let vol = key === "SOL" ? 0.008 : 0.004;
-        markets[key].price *= (1 + (Math.random() - 0.5) * vol);
+// Root Check
+app.get("/", (req, res) => res.send("VOLSIM_CORE_V4_RUNNING"));
+
+// Pulse Check
+app.get("/pulse", (req, res) => {
+    res.json({
+        balance: wealth.toLocaleString(undefined, {minimumFractionDigits: 2}),
+        btc: btc,
+        price: price,
+        history: history
     });
-}, 3000);
-
-app.get("/api/data", (req, res) => {
-    res.json({ markets, version: "V11_MULTI", status: "LIVE" });
 });
 
-app.listen(PORT, "0.0.0.0", () => console.log("Multi_Asset_V11_Live"));
-// Force Sync Trigger 12.0
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, "0.0.0.0", () => {
+    console.log("SIGNAL_LIVE_ON_PORT_10000");
+});
