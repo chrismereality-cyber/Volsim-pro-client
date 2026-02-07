@@ -10,22 +10,29 @@ app.use(express.json());
 const SECRET_KEY = process.env.JWT_SECRET || "volsim_secret";
 const ADMIN_USER = process.env.ADMIN_USER || "admin";
 const ADMIN_PASS = process.env.ADMIN_PASS || "password123";
-
 const DATA_FILE = "/opt/render/project/src/data.json";
-let state = { wealth: 1240270.80, btc: 0.6, price: 98000.00 };
+
+// V14 Global Asset Initializer
+let state = {
+    wealth: 1240270.80,
+    portfolio: { "BTC": 0.6, "XAU": 0, "ETH": 0, "EUR": 0, "JPY": 0 },
+    prices: { "BTC": 98000, "XAU": 2050, "ETH": 2400, "EUR": 1.08, "JPY": 0.0067 },
+    history: []
+};
 
 if (fs.existsSync(DATA_FILE)) {
     try { state = JSON.parse(fs.readFileSync(DATA_FILE)); } catch(e) {}
 }
 
-const saveState = () => {
-    try { fs.writeFileSync(DATA_FILE, JSON.stringify(state)); } catch(e) {}
-};
+const saveState = () => fs.writeFileSync(DATA_FILE, JSON.stringify(state));
 
-// V13 VOLATILITY ENGINE
+// GLOBAL VOLATILITY ENGINE (Updates every 3s)
 setInterval(() => {
-    const change = 1 + (Math.random() * 0.004 - 0.002); // +/- 0.2%
-    state.price = parseFloat((state.price * change).toFixed(2));
+    Object.keys(state.prices).forEach(asset => {
+        const volatility = asset === "BTC" || asset === "ETH" ? 0.005 : 0.001; // Crypto is swingier
+        const change = 1 + (Math.random() * (volatility * 2) - volatility);
+        state.prices[asset] = parseFloat((state.prices[asset] * change).toFixed(asset === "JPY" ? 6 : 2));
+    });
 }, 3000);
 
 const auth = (req, res, next) => {
@@ -36,30 +43,36 @@ const auth = (req, res, next) => {
     } catch (e) { res.status(401).send("Unauthorized"); }
 };
 
-app.get("/", (req, res) => res.send("VOLSIM_PRO_V13_STABLE"));
-
 app.get("/pulse", auth, (req, res) => {
-    res.json({ 
-        balance: state.wealth.toLocaleString(undefined, {minimumFractionDigits: 2}), 
-        btc: state.btc.toFixed(4), 
-        price: state.price 
+    res.json({
+        balance: state.wealth.toLocaleString(undefined, {minimumFractionDigits: 2}),
+        rawBalance: state.wealth,
+        portfolio: state.portfolio,
+        prices: state.prices,
+        history: state.history.slice(-10).reverse() // Last 10 trades
     });
 });
 
 app.post("/trade", auth, (req, res) => {
-    const { type, amountBTC } = req.body;
-    const numAmt = parseFloat(amountBTC);
-    const cost = numAmt * state.price;
+    const { type, asset, amount } = req.body;
+    const numAmt = parseFloat(amount);
+    const price = state.prices[asset];
+    const cost = numAmt * price;
 
     if (type === "BUY" && state.wealth >= cost) {
         state.wealth -= cost;
-        state.btc += numAmt;
-    } else if (type === "SELL" && state.btc >= numAmt) {
+        state.portfolio[asset] = (state.portfolio[asset] || 0) + numAmt;
+    } else if (type === "SELL" && state.portfolio[asset] >= numAmt) {
         state.wealth += cost;
-        state.btc -= numAmt;
+        state.portfolio[asset] -= numAmt;
     } else {
-        return res.status(400).json({ success: false });
+        return res.status(400).json({ success: false, message: "Invalid Trade" });
     }
+
+    state.history.push({
+        type, asset, amount: numAmt, price, time: new Date().toLocaleTimeString()
+    });
+    
     saveState();
     res.json({ success: true });
 });
@@ -73,4 +86,4 @@ app.post("/login", (req, res) => {
 });
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log("V13_STABLE_READY"));
+app.listen(PORT, () => console.log("V14_GLOBAL_READY"));
