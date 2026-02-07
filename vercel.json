@@ -1,1 +1,8 @@
-{"outputDirectory": "dist"}
+{
+  "version": 2,
+  "name": "volsim-pro-web",
+  "cleanUrls": true,
+  "framework": null,
+  "installCommand": null,
+  "buildCommand": null
+}
