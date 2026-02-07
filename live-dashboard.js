@@ -1,40 +1,21 @@
 const API_URL = "https://volsim-pro.onrender.com";
 
-async function updateDashboard() {
-    const token = localStorage.getItem("volsim_token");
-    try {
-        const res = await fetch(`${API_URL}/pulse`, {
-            headers: { "Authorization": `Bearer ${token}` }
-        });
-        
-        if (res.status === 401 || res.status === 403) {
-            localStorage.removeItem("volsim_token");
-            window.location.reload();
-            return;
-        }
-
-        const data = await res.json();
-        
-        // Update DOM elements
-        document.getElementById('backend-status').innerText = "SECURE_LINK";
-        document.getElementById('balance').innerText = data.balance;
-        document.getElementById('btc-holdings').innerText = data.btc;
-        document.getElementById('btc-price').innerText = data.price.toLocaleString();
-        
-        // Proper Net Worth Calculation
-        const balNum = parseFloat(data.balance.replace(/,/g, ''));
-        const netWorth = balNum + (data.btc * data.price);
-        document.getElementById('net-worth').innerText = netWorth.toLocaleString(undefined, {minimumFractionDigits: 2});
-        
-        document.getElementById('timestamp').innerText = new Date().toLocaleTimeString();
-    } catch (err) {
-        document.getElementById('backend-status').innerText = "OFFLINE";
+async function login() {
+    // 1. Check if we already have a token
+    if (localStorage.getItem("volsim_token")) {
+        startDashboard();
+        return;
     }
-}
 
-async function attemptLogin() {
-    const user = prompt("Username:");
+    // 2. If no token, ask for credentials
+    const user = prompt("Username (Hint: chris):");
     const pass = prompt("Password:");
+
+    if (!user || !pass) {
+        alert("Credentials required to access Volsim Core.");
+        window.location.reload();
+        return;
+    }
 
     try {
         const res = await fetch(`${API_URL}/login`, {
@@ -44,26 +25,25 @@ async function attemptLogin() {
         });
 
         const data = await res.json();
-        if (data.success) {
+
+        if (res.ok && data.success) {
             localStorage.setItem("volsim_token", data.token);
-            startApp();
+            alert("Access Granted.");
+            startDashboard();
         } else {
-            alert("Unauthorized: " + (data.message || "Invalid Credentials"));
-            window.location.reload();
+            alert("Access Denied: " + (data.message || "Invalid Login"));
+            // DON'T reload automatically, let the user click a button or refresh manually
         }
-    } catch (e) {
-        alert("Server Error. Please try again later.");
+    } catch (err) {
+        alert("Connection Error. Is the Render server awake?");
     }
 }
 
-function startApp() {
-    setInterval(updateDashboard, 3000);
+function startDashboard() {
+    // This is where your updateDashboard() and setInterval go
+    console.log("System Online...");
     updateDashboard();
+    setInterval(updateDashboard, 3000);
 }
 
-// Logic: Check if token exists, if not, force login
-if (!localStorage.getItem("volsim_token")) {
-    attemptLogin();
-} else {
-    startApp();
-}
+login();
