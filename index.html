@@ -1,30 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><title>Volsim Global V14</title>
+    <meta charset="UTF-8"><title>Volsim Global V14.1</title>
     <style>
-        body { background: #050505; color: #00ff00; font-family: 'Courier New', monospace; font-size: 14px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
-        .card { border: 1px solid #222; padding: 15px; background: #0a0a0a; }
+        body { background: #050505; color: #00ff00; font-family: 'Courier New', monospace; padding: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { border: 1px solid #222; padding: 15px; background: #0a0a0a; border-radius: 5px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { text-align: left; padding: 8px; border-bottom: 1px solid #111; }
         .price-up { color: #00ff00; } .price-down { color: #ff0000; }
-        input, select, button { background: #000; color: #00ff00; border: 1px solid #00ff00; padding: 10px; margin: 5px 0; }
-        button { cursor: pointer; width: 48%; font-weight: bold; }
-        #history-log { font-size: 0.8em; color: #888; }
+        input, select, button { background: #000; color: #00ff00; border: 1px solid #00ff00; padding: 10px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        button { cursor: pointer; font-weight: bold; background: #00ff00; color: #000; }
+        .btn-sell { background: #ff0000 !important; color: #fff !important; }
+        #history-table { font-size: 0.8em; color: #888; }
     </style>
 </head>
 <body>
-    <h1 style="text-align:center">VOLSIM_GLOBAL_V14</h1>
+    <h1 style="text-align:center">VOLSIM_GLOBAL_V14.1</h1>
     <div class="grid">
         <div class="card">
-            <h2>Market Prices</h2>
+            <h2>MARKET_PRICES</h2>
             <table id="market-table"></table>
         </div>
         <div class="card">
-            <h2>Portfolio & Trade</h2>
-            <div>Available Cash: $<span id="balance">0.00</span></div>
-            <div>Net Worth: <span id="net-worth" style="color:#fff">0.00</span></div>
+            <h2>PORTFOLIO_CONTROL</h2>
+            <div>CASH: $<span id="balance">0.00</span></div>
+            <div style="font-size: 1.2em; margin: 10px 0;">NET_WORTH: <span id="net-worth" style="color:#fff">$0.00</span></div>
             <hr style="border:0; border-top:1px solid #222">
             <select id="asset-select">
                 <option value="BTC">BTC (Bitcoin)</option>
@@ -33,17 +34,15 @@
                 <option value="EUR">EUR/USD</option>
                 <option value="JPY">USD/JPY</option>
             </select>
-            <input type="number" id="trade-amount" value="1">
-            <div style="display:flex; justify-content: space-between;">
-                <button onclick="trade('BUY')" style="background:#00ff00; color:#000">BUY</button>
-                <button onclick="trade('SELL')" style="background:#ff0000; color:#fff">SELL</button>
-            </div>
+            <input type="number" id="trade-amount" value="0.1" step="0.1">
+            <button onclick="trade('BUY')">EXECUTE BUY ORDER</button>
+            <button class="btn-sell" onclick="trade('SELL')">EXECUTE SELL ORDER</button>
         </div>
         <div class="card" style="grid-column: span 2;">
-            <h2>Trade History</h2>
+            <h2>TRANSACTION_HISTORY</h2>
             <table id="history-table"></table>
         </div>
     </div>
-    <script src="live-dashboard.js"></script>
+    <script src="live-dashboard.js?v=14.1"></script>
 </body>
 </html>
