@@ -10,10 +10,9 @@ let btc = 0;
 let price = 98000.00;
 let history = [98000, 98100, 97900, 98200];
 
-// Root Check
-app.get("/", (req, res) => res.send("VOLSIM_CORE_V4_RUNNING"));
+// This matches the text Render is currently showing, but adds the pulse logic
+app.get("/", (req, res) => res.send("Volsim Pro API is running - PULSE_ENABLED_V6"));
 
-// Pulse Check
 app.get("/pulse", (req, res) => {
     res.json({
         balance: wealth.toLocaleString(undefined, {minimumFractionDigits: 2}),
@@ -25,5 +24,5 @@ app.get("/pulse", (req, res) => {
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, "0.0.0.0", () => {
-    console.log("SIGNAL_LIVE_ON_PORT_10000");
+    console.log("SERVER_LIVE_V6");
 });
