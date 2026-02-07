@@ -1,12 +1,26 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VOLSIM PRO</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volsim Pro Dashboard</title>
+    <style>
+        body { background: #0f0f0f; color: #00ff00; font-family: monospace; padding: 20px; }
+        .card { border: 1px solid #00ff00; padding: 15px; margin-bottom: 10px; border-radius: 5px; background: #1a1a1a; }
+        h1 { border-bottom: 2px solid #00ff00; padding-bottom: 10px; }
+        span { font-weight: bold; color: #fff; }
+        #backend-status { color: #ff0000; }
+    </style>
+</head>
+<body>
+    <h1>VOLSIM_CORE_DASHBOARD_V7</h1>
+    <div class="card">Backend Status: <span id="backend-status">CONNECTING...</span></div>
+    <div class="card">Balance: $<span id="balance">0.00</span></div>
+    <div class="card">BTC Holdings: <span id="btc-holdings">0</span></div>
+    <div class="card">Net Worth: $<span id="net-worth">0.00</span></div>
+    <div class="card">BTC Price: $<span id="btc-price">0.00</span></div>
+    <div class="card">Last Update: <span id="timestamp">N/A</span></div>
+
+    <script src="live-dashboard.js"></script>
+</body>
 </html>
