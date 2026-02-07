@@ -11,30 +11,23 @@ const SECRET_KEY = process.env.JWT_SECRET || "volsim_secret";
 const ADMIN_USER = process.env.ADMIN_USER || "admin";
 const ADMIN_PASS = process.env.ADMIN_PASS || "password123";
 
-// --- PERSISTENCE LOGIC ---
-const DATA_FILE = "./data.json";
-let state = { 
-    wealth: 1240270.80, 
-    btc: 0.1, 
-    price: 98000.00 
-};
+const DATA_FILE = "/opt/render/project/src/data.json";
+let state = { wealth: 1240270.80, btc: 0.6, price: 98000.00 };
 
-// Load saved data if it exists
 if (fs.existsSync(DATA_FILE)) {
-    state = JSON.parse(fs.readFileSync(DATA_FILE));
+    try { state = JSON.parse(fs.readFileSync(DATA_FILE)); } catch(e) {}
 }
 
-const saveState = () => fs.writeFileSync(DATA_FILE, JSON.stringify(state));
+const saveState = () => {
+    try { fs.writeFileSync(DATA_FILE, JSON.stringify(state)); } catch(e) {}
+};
 
-// --- PRICE VOLATILITY ENGINE ---
+// V13 VOLATILITY ENGINE
 setInterval(() => {
-    const change = 1 + (Math.random() * 0.01 - 0.005); // +/- 0.5%
-    state.price = +(state.price * change).toFixed(2);
-    // Note: We don't saveState here to avoid constant disk writing, 
-    // only on trades.
+    const change = 1 + (Math.random() * 0.004 - 0.002); // +/- 0.2%
+    state.price = parseFloat((state.price * change).toFixed(2));
 }, 3000);
 
-// --- AUTH MIDDLEWARE ---
 const auth = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(" ")[1];
@@ -43,15 +36,7 @@ const auth = (req, res, next) => {
     } catch (e) { res.status(401).send("Unauthorized"); }
 };
 
-app.get("/", (req, res) => res.send("VOLSIM_PRO_LIVE_ENGINE_V13"));
-
-app.post("/login", (req, res) => {
-    if (req.body.username === ADMIN_USER && req.body.password === ADMIN_PASS) {
-        const token = jwt.sign({ user: ADMIN_USER }, SECRET_KEY, { expiresIn: "4h" });
-        return res.json({ success: true, token });
-    }
-    res.status(401).json({ success: false });
-});
+app.get("/", (req, res) => res.send("VOLSIM_PRO_V13_STABLE"));
 
 app.get("/pulse", auth, (req, res) => {
     res.json({ 
@@ -63,23 +48,29 @@ app.get("/pulse", auth, (req, res) => {
 
 app.post("/trade", auth, (req, res) => {
     const { type, amountBTC } = req.body;
-    const cost = amountBTC * state.price;
+    const numAmt = parseFloat(amountBTC);
+    const cost = numAmt * state.price;
 
-    if (type === "BUY") {
-        if (state.wealth >= cost) {
-            state.wealth -= cost;
-            state.btc += parseFloat(amountBTC);
-        } else return res.status(400).json({ message: "Insufficient Cash" });
-    } else if (type === "SELL") {
-        if (state.btc >= amountBTC) {
-            state.wealth += cost;
-            state.btc -= parseFloat(amountBTC);
-        } else return res.status(400).json({ message: "Insufficient BTC" });
+    if (type === "BUY" && state.wealth >= cost) {
+        state.wealth -= cost;
+        state.btc += numAmt;
+    } else if (type === "SELL" && state.btc >= numAmt) {
+        state.wealth += cost;
+        state.btc -= numAmt;
+    } else {
+        return res.status(400).json({ success: false });
     }
-
     saveState();
     res.json({ success: true });
 });
 
+app.post("/login", (req, res) => {
+    if (req.body.username === ADMIN_USER && req.body.password === ADMIN_PASS) {
+        const token = jwt.sign({ user: ADMIN_USER }, SECRET_KEY, { expiresIn: "4h" });
+        return res.json({ success: true, token });
+    }
+    res.status(401).json({ success: false });
+});
+
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log("V13_ENGINE_ONLINE"));
+app.listen(PORT, () => console.log("V13_STABLE_READY"));
