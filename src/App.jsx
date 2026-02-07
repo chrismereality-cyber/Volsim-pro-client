@@ -1,73 +1,38 @@
 import React, { useState } from 'react';
-import './App.css';
+import Dashboard from './Dashboard';
 
-function App() {
-  const [alias, setAlias] = useState('');
-  const [securityKey, setSecurityKey] = useState('');
-  const [status, setStatus] = useState('');
-  const [wealth, setWealth] = useState(null);
-
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:10000';
+export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [code, setCode] = useState('');
+  const [error, setError] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setStatus('ACCESSING_LEDGER...');
-
-    try {
-      const response = await fetch(\/api/login, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          alias: alias, 
-          security_key: securityKey 
-        })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setStatus('PROTOCOL_ACCEPTED');
-        setWealth(data.wealth);
-      } else {
-        setStatus('ACCESS_DENIED: ' + (data.error || 'INVALID_CREDENTIALS'));
-      }
-    } catch (err) {
-      console.error('CONNECTION_ERROR:', err);
-      setStatus('OFFLINE_ERROR: CHECK_BACKEND_STATUS');
+    // Simplified logic: If code is 1337, let them in. 
+    // You can also point this to your Render backend if you have a /login route.
+    if (code === '1337') {
+      setIsLoggedIn(true);
+    } else {
+      setError('INVALID_ACCESS_CODE');
     }
   };
 
+  if (isLoggedIn) return <Dashboard />;
+
   return (
-    <div className="app-container">
-      <h1>VOLSIM PRO : LEDGER_ACCESS</h1>
-      {!wealth ? (
-        <form onSubmit={handleLogin}>
-          <input 
-            type="text" 
-            placeholder="USER_ALIAS" 
-            value={alias} 
-            onChange={(e) => setAlias(e.target.value)} 
-          />
-          <input 
-            type="password" 
-            placeholder="SECURITY_KEY" 
-            value={securityKey} 
-            onChange={(e) => setSecurityKey(e.target.value)} 
-          />
-          <button type="submit">INITIALIZE_LOGIN</button>
-          <p className="status">{status}</p>
-        </form>
-      ) : (
-        <div className="dashboard">
-          <h2>WELCOME, {alias}</h2>
-          <div className="wealth-display">
-            <label>MULTIVERSE_WEALTH:</label>
-            <span>$ {wealth.toLocaleString()}</span>
-          </div>
-        </div>
-      )}
+    <div style={{background:'#000', color:'#0f0', height:'100vh', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'monospace'}}>
+      <form onSubmit={handleLogin} style={{border:'1px solid #111', padding:'40px', textAlign:'center'}}>
+        <h1 style={{fontSize:'18px', marginBottom:'20px'}}>SYSTEM_ACCESS_REQUIRED</h1>
+        <input 
+          type="password" 
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          placeholder="ENTER_PASSCODE" 
+          style={{background:'#111', border:'1px solid #0f0', color:'#0f0', padding:'10px', outline:'none', textAlign:'center'}}
+        />
+        {error && <div style={{color:'#f00', marginTop:'10px', fontSize:'12px'}}>{error}</div>}
+        <button type="submit" style={{display:'none'}}>SUBMIT</button>
+      </form>
     </div>
   );
 }
-
-export default App;
